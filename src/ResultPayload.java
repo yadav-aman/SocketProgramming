@@ -1,7 +1,7 @@
 import java.io.Serializable;
 
 class ResultPayload implements Serializable{
-    private boolean isPath;
+    private final boolean isPath;
     public ResultPayload(boolean isPath){
         this.isPath = isPath;
     }

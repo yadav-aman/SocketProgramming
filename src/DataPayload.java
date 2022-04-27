@@ -3,10 +3,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 class DataPayload implements Serializable{
-    private int[][] adjMatrix;
-    private ArrayList<ArrayList<Integer>> adjList;
-    private int pathLen;
-    private int startNode, endNode;
+    private final int[][] adjMatrix;
+    private final ArrayList<ArrayList<Integer>> adjList;
+    private final int pathLen;
+    private final int startNode, endNode;
 
     public DataPayload(int[][] adjMatrix, int pathLen, String startNode, String endNode){
         this.adjMatrix = adjMatrix;
@@ -46,14 +46,14 @@ class DataPayload implements Serializable{
         return lengths.contains(this.pathLen);
     }
 
-    private void pathDFS(Integer source, boolean[] isVisited, ArrayList<Integer> paths, ArrayList<Integer> lengths){
-        if(source.equals(this.endNode)){
+    private void pathDFS(Integer currentNode, boolean[] isVisited, ArrayList<Integer> paths, ArrayList<Integer> lengths){
+        if(currentNode.equals(this.endNode)){
             lengths.add(paths.size()-1);
             return;
         }
-        isVisited[source] = true;
+        isVisited[currentNode] = true;
 
-        for(Integer x: this.adjList.get(source)){
+        for(Integer x: this.adjList.get(currentNode)){
             if(!isVisited[x]){
                 paths.add(x);
                 pathDFS(x, isVisited, paths, lengths);
