@@ -4,13 +4,13 @@ import java.util.Arrays;
 class DataPayload implements Serializable{
     private int[][] adjMatrix;
     private int pathLen;
-    private String startNode, endNode;
+    private int startNode, endNode;
 
     public DataPayload(int[][] adjMatrix, int pathLen, String startNode, String endNode){
         this.adjMatrix = adjMatrix;
         this.pathLen = pathLen;
-        this.startNode = startNode.toUpperCase();
-        this.endNode = endNode.toUpperCase();
+        this.startNode = startNode.toUpperCase().charAt(0) - 'A';
+        this.endNode = endNode.toUpperCase().charAt(0) - 'A';
     }
 
     public boolean isPath(){
