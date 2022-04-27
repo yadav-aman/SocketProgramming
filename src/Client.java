@@ -10,16 +10,16 @@ public class Client  {
         System.out.print("\nEnter Number of nodes : ");
         int n = scan.nextInt();
 
-        double[][] adjMatrix = new double[n][n];
+        int[][] adjMatrix = new int[n][n];
         System.out.println("Enter the values of matrix : ");
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                adjMatrix[i][j] = scan.nextDouble();
+                adjMatrix[i][j] = scan.nextInt();
             }
         }
 
         System.out.print("\nEnter path length : ");
-        double pathLen = scan.nextDouble();
+        int pathLen = scan.nextInt();
 
         System.out.print("\nEnter starting node : ");
         String startNode = scan.next();
@@ -29,15 +29,14 @@ public class Client  {
 
         try
         {
-            System.out.println("Welcome client");
             Socket clients = new Socket("127.0.0.1",6956);
-            System.out.println("Client connected");
+            System.out.println("\nClient connected");
 
             ObjectOutputStream op = new ObjectOutputStream(clients.getOutputStream());
             System.out.println("Output stream OK");
 
             ObjectInputStream ip = new ObjectInputStream(clients.getInputStream());
-            System.out.println("Input stream OK");
+            System.out.println("Input stream OK\n");
 
             DataPayload data = new DataPayload(adjMatrix,pathLen,startNode, endNode);
             op.writeObject(data);

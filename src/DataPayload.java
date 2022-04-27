@@ -2,11 +2,11 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 class DataPayload implements Serializable{
-    private double[][] adjMatrix;
-    private double pathLen;
+    private int[][] adjMatrix;
+    private int pathLen;
     private String startNode, endNode;
 
-    public DataPayload(double[][] adjMatrix, double pathLen, String startNode, String endNode){
+    public DataPayload(int[][] adjMatrix, int pathLen, String startNode, String endNode){
         this.adjMatrix = adjMatrix;
         this.pathLen = pathLen;
         this.startNode = startNode.toUpperCase();
@@ -20,7 +20,7 @@ class DataPayload implements Serializable{
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (double[] row: this.adjMatrix){
+        for (int[] row: this.adjMatrix){
             sb.append(Arrays.toString(row));
         }
         String adjMatrixStr = sb.toString();
