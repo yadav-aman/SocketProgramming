@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server{
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException{
         try{
             ServerSocket ss = new ServerSocket(6956); // open the server socket
             System.out.println("Server Started");
@@ -21,6 +21,7 @@ public class Server{
                 boolean isPath = data.isPath();
                 ResultPayload res = new ResultPayload(isPath);
                 op.writeObject(res); //perform communication with client (send)
+                System.out.println("Sent: " + res + "\n");
             }
         }
         catch (IOException | ClassNotFoundException ex) {
