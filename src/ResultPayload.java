@@ -14,7 +14,9 @@ class ResultPayload implements Serializable{
     public boolean getIsPath(){
         return this.isPath;
     }
-    public byte[] getImage() { return this.image; }
+    public byte[] getImage() {
+        return this.image;
+    }
 
     @Override
     public String toString() {
