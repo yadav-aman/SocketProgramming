@@ -1,7 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.RenderedImage;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -62,22 +62,22 @@ public class Client  {
             System.out.println(pathRes);
 
             // Converting byte array to Image
-            Image im = ImageIO.read((new ByteArrayInputStream(res.getImage())));
+            BufferedImage im = ImageIO.read((new ByteArrayInputStream(res.getImage())));
             String fileName = String.format("img-%s-%s%s%s.jpeg", System.currentTimeMillis(), startNode, endNode, pathLen);
             // Saving image
             File outputFile = new File(fileName);
-            ImageIO.write((RenderedImage) im, "jpeg", outputFile);
+            ImageIO.write(im, "jpeg", outputFile);
             System.out.println("Image file saved : " +  fileName);
 
             // Displaying image on JFrame
             JFrame frame = new JFrame(fileName);
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setAlwaysOnTop(true);
+            frame.getContentPane().setLayout(new FlowLayout());
             frame.getContentPane().add(new JLabel(pathRes));
-            frame.pack();
             frame.getContentPane().add(new JLabel(new ImageIcon(im)));
             frame.pack();
-            frame.setAlwaysOnTop(true);
+            frame.toFront();
             frame.setVisible(true);
 
             clients.close(); //close the connection
