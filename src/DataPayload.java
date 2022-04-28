@@ -10,78 +10,63 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 class DataPayload implements Serializable{
     private final int[][] adjMatrix;
-    private final ArrayList<ArrayList<Integer>> adjList;
     private final int pathLen;
     private final int startNode, endNode;
 
+    // Constructor
     public DataPayload(int[][] adjMatrix, int pathLen, String startNode, String endNode){
         this.adjMatrix = adjMatrix;
-        this.adjList = toAdjList();
         this.pathLen = pathLen;
         this.startNode = startNode.toUpperCase().charAt(0) - 'A';
         this.endNode = endNode.toUpperCase().charAt(0) - 'A';
     }
 
-    private ArrayList<ArrayList<Integer> > toAdjList(){
-        ArrayList<ArrayList<Integer> > adjList = new ArrayList<>(this.adjMatrix.length);
-
-        for (int i = 0; i < this.adjMatrix.length; i++) {
-            adjList.add(new ArrayList<>());
-        }
-
-        for (int i = 0; i < this.adjMatrix.length; i++) {
-            for (int j = 0; j < this.adjMatrix.length; j++) {
-                if(this.adjMatrix[i][j] >= 1){
-                    adjList.get(i).add(j);
-                }
-            }
-        }
-
-        return adjList;
-    }
-
+    // check if path exist
     public boolean isPath(){
-        boolean[] isVisited = new boolean[this.adjMatrix.length];
-        ArrayList<Integer> paths = new ArrayList<>();
-        ArrayList<Integer> lengths = new ArrayList<>();
-
-        paths.add(this.startNode);
-
-        pathDFS(this.startNode, isVisited, paths, lengths);
-
-        return lengths.contains(this.pathLen);
+        return checkPath(this.startNode, this.pathLen) > 0;
     }
 
-    private void pathDFS(Integer currentNode, boolean[] isVisited, ArrayList<Integer> paths, ArrayList<Integer> lengths){
-        if(currentNode.equals(this.endNode)){
-            lengths.add(paths.size()-1);
-            return;
-        }
-        isVisited[currentNode] = true;
+    // calculate path
+    private int checkPath(int currentNode, int k)
+    {
+        // Base cases
+        // same node
+        if (k == 0 && currentNode == this.endNode)
+            return 1;
+        // direct connection
+        if (k == 1 && this.adjMatrix[currentNode][this.endNode] == 1)
+            return 1;
+        // negative path length
+        if (k <= 0)
+            return 0;
 
-        for(Integer x: this.adjList.get(currentNode)){
-            if(!isVisited[x]){
-                paths.add(x);
-                pathDFS(x, isVisited, paths, lengths);
-                paths.remove(x);
-            }
-        }
+        int count = 0;
 
-        isVisited[this.endNode] = false;
+        // Go to all adjacent nodes of currentNode and recur
+        for (int i = 0; i < this.adjMatrix.length; i++)
+            // if adjacent increase count
+            if (this.adjMatrix[currentNode][i] == 1)
+                count += checkPath( i, k - 1);
+
+        return count;
     }
+
 
     public byte[] getImage() throws IOException {
+        // Initialize Direct Sparse Graph of JUNG library
         DirectedSparseGraph<String, String> graph = new DirectedSparseGraph<>();
+
+        // Add vertex to graph
         for (int i = 0; i < this.adjMatrix.length; i++) {
             String vertex = Character.toString('A' + i);
             graph.addVertex(vertex);
         }
 
+        // Add Edges
         for (int i = 0; i < this.adjMatrix.length; i++) {
             for (int j = 0; j < this.adjMatrix.length; j++) {
                 if(this.adjMatrix[i][j]>=1){
@@ -92,24 +77,32 @@ class DataPayload implements Serializable{
             }
 
         }
+
+        // Initiate Visualization server
         VisualizationImageServer<String, String> vs = new VisualizationImageServer<>(new CircleLayout<>(graph), new Dimension(600, 600));
         Transformer<String, String> transformer = arg0 -> arg0;
-
         vs.getRenderContext().setVertexLabelTransformer(transformer);
 
+        // Attach JFrame without it's GUI window
         JFrame frame = new JFrame();
         frame.setBackground(Color.WHITE);
         frame.setUndecorated(true);
+        // Add graph to JFrame
         frame.getContentPane().add(vs);
         frame.pack();
+        // Create image of graph
         BufferedImage bi = new BufferedImage(vs.getWidth(), vs.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = bi.createGraphics();
         vs.print(graphics);
+        // Dispose JFrame and Graphic
         graphics.dispose();
         frame.dispose();
 
+        // Write image to Byte output stream
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bi, "jpeg", baos);
+
+        // convert OutputStream to byte array
         return baos.toByteArray();
     }
 
