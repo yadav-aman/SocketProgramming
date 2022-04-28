@@ -44,15 +44,15 @@ class DataPayload implements Serializable{
         if (k <= 0)
             return 0;
 
-        int count = 0;
+        int step = 0;
 
         // Go to all adjacent nodes of currentNode and recur
         for (int i = 0; i < this.adjMatrix.length; i++)
             // if adjacent increase count
             if (this.adjMatrix[currentNode][i] == 1)
-                count += checkPath( i, k - 1);
+                step += checkPath( i, k - 1);
 
-        return count;
+        return step;
     }
 
 

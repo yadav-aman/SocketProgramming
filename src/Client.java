@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.*;
@@ -49,12 +50,16 @@ public class Client  {
 
             // getting result from the server
             ResultPayload res = (ResultPayload) ip.readObject();
+            StringBuilder sb = new StringBuilder();
             if(res.getIsPath()){
-                System.out.println("Yes there is a path of length " + pathLen + " from "  + startNode + " to " + endNode + " in the graph");
+                sb.append("Yes there is a path of length ");
             }
             else {
-                System.out.println("No there is no a path of length " + pathLen + " from "  + startNode + " to " + endNode + " in the graph");
+                sb.append("No there is no path of length ");
             }
+            sb.append(pathLen).append(" from ").append(startNode).append(" to ").append(endNode).append(" in the graph");
+            String pathRes = sb.toString();
+            System.out.println(pathRes);
 
             // Converting byte array to Image
             Image im = ImageIO.read((new ByteArrayInputStream(res.getImage())));
@@ -63,6 +68,18 @@ public class Client  {
             File outputFile = new File(fileName);
             ImageIO.write((RenderedImage) im, "jpeg", outputFile);
             System.out.println("Image file saved : " +  fileName);
+
+            // Displaying image on JFrame
+            JFrame frame = new JFrame(fileName);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setAlwaysOnTop(true);
+            frame.getContentPane().add(new JLabel(pathRes));
+            frame.pack();
+            frame.getContentPane().add(new JLabel(new ImageIcon(im)));
+            frame.pack();
+            frame.setAlwaysOnTop(true);
+            frame.setVisible(true);
+
             clients.close(); //close the connection
         }
         catch(IOException | ClassNotFoundException ex) {
