@@ -1,3 +1,14 @@
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.visualization.VisualizationImageServer;
+import org.apache.commons.collections15.Transformer;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +28,7 @@ class DataPayload implements Serializable{
     }
 
     private ArrayList<ArrayList<Integer> > toAdjList(){
-        ArrayList<ArrayList<Integer> > adjList = new ArrayList<ArrayList<Integer> >(this.adjMatrix.length);
+        ArrayList<ArrayList<Integer> > adjList = new ArrayList<>(this.adjMatrix.length);
 
         for (int i = 0; i < this.adjMatrix.length; i++) {
             adjList.add(new ArrayList<>());
@@ -62,6 +73,44 @@ class DataPayload implements Serializable{
         }
 
         isVisited[this.endNode] = false;
+    }
+
+    public byte[] getImage() throws IOException {
+        DirectedSparseGraph<String, String> graph = new DirectedSparseGraph<>();
+        for (int i = 0; i < this.adjMatrix.length; i++) {
+            String vertex = Character.toString('A' + i);
+            graph.addVertex(vertex);
+        }
+
+        for (int i = 0; i < this.adjMatrix.length; i++) {
+            for (int j = 0; j < this.adjMatrix.length; j++) {
+                if(this.adjMatrix[i][j]>=1){
+                    String n1 = Character.toString('A' + i);
+                    String n2 = Character.toString( 'A' + j);
+                    graph.addEdge("Edge" + this.adjMatrix.length*i + j, n1, n2);
+                }
+            }
+
+        }
+        VisualizationImageServer<String, String> vs = new VisualizationImageServer<>(new CircleLayout<>(graph), new Dimension(600, 600));
+        Transformer<String, String> transformer = arg0 -> arg0;
+
+        vs.getRenderContext().setVertexLabelTransformer(transformer);
+
+        JFrame frame = new JFrame();
+        frame.setBackground(Color.WHITE);
+        frame.setUndecorated(true);
+        frame.getContentPane().add(vs);
+        frame.pack();
+        BufferedImage bi = new BufferedImage(vs.getWidth(), vs.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = bi.createGraphics();
+        vs.print(graphics);
+        graphics.dispose();
+        frame.dispose();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi, "jpeg", baos);
+        return baos.toByteArray();
     }
 
     @Override

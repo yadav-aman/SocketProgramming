@@ -1,7 +1,9 @@
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.RenderedImage;
+import java.io.*;
 import java.net.Socket;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Client  {
@@ -43,11 +45,16 @@ public class Client  {
             op.flush();
             ResultPayload res = (ResultPayload) ip.readObject();
             if(res.getIsPath()){
-                System.out.println("Y");
+                System.out.println("Yes there is a path of length " + pathLen + " from "  + startNode + " to " + endNode + " in the graph");
             }
             else {
-                System.out.println("N");
+                System.out.println("No there is no a path of length " + pathLen + " from "  + startNode + " to " + endNode + " in the graph");
             }
+            Image im = ImageIO.read((new ByteArrayInputStream(res.getImage())));
+            String fileName = String.format("img-%s-%s%s%s.jpeg", System.currentTimeMillis(), startNode, endNode, pathLen);
+            File outputFile = new File(fileName);
+            ImageIO.write((RenderedImage) im, "jpeg", outputFile);
+            System.out.println("Image file saved in current directory : " +  fileName);
             clients.close(); //close the connection
         }
         catch(IOException | ClassNotFoundException ex) {

@@ -1,6 +1,5 @@
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.awt.*;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -19,13 +18,15 @@ public class Server{
                 DataPayload data = (DataPayload) ip.readObject(); //perform communication with client (Receive)
                 System.out.println("Received: " + data);
                 boolean isPath = data.isPath();
-                ResultPayload res = new ResultPayload(isPath);
+                byte[] image = data.getImage();
+                ResultPayload res = new ResultPayload(isPath, image);
                 op.writeObject(res); //perform communication with client (send)
                 System.out.println("Sent: " + res + "\n");
             }
         }
         catch (IOException | ClassNotFoundException ex) {
             System.out.println("Some Error occurred");
+            System.out.println(ex);
         }
     }
 }
